@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Jessie Math - 200以內的數</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary-color: #FFD700; --bg-color: #fff9eb; --accent-color: #ff6b6b; }
+        * { box-sizing: border-box; font-family: 'Microsoft JhengHei', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; background: var(--bg-color); color: #444; touch-action: manipulation; }
+
+        /* Header Area */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 15px; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .hero-left { display: flex; align-items: center; }
+        .logo-circle {
+            width: 45px; height: 45px; background: var(--primary-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 8px;
+        }
+        .logo-circle img { width: 35px; height: auto; }
+        .brand-name { font-weight: 900; font-size: 1.1rem; color: #333; }
+
+        .nav-right { display: flex; gap: 8px; }
+        .nav-btn {
+            text-decoration: none; color: #666; font-size: 0.75rem;
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+        }
+
+        /* Screens */
+        .screen { display: none; padding: 20px; max-width: 500px; margin: auto; text-align: center; min-height: 85vh; }
+        .active { display: block; animation: softFade 0.5s ease; }
+        @keyframes softFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        .input-group { background: white; padding: 30px 20px; border-radius: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        input[type="text"] {
+            padding: 15px; width: 90%; font-size: 1.2rem; border-radius: 15px;
+            border: 2px solid #ffe082; margin: 15px 0; outline: none; text-align: center; background: #fffdf7;
+        }
+        .btn-main {
+            background: var(--primary-color); border: none; padding: 15px 45px;
+            font-size: 1.5rem; border-radius: 50px; cursor: pointer;
+            box-shadow: 0 6px 0 #d4b500; font-weight: bold; margin-top: 10px; transition: 0.1s;
+        }
+        .btn-main:active { transform: translateY(4px); box-shadow: 0 2px 0 #d4b500; }
+
+        /* Levels */
+        .grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-top: 20px; }
+        .lvl-card {
+            background: white; padding: 20px; border-radius: 20px; border: 2px solid #eee;
+            cursor: pointer; display: flex; align-items: center; gap: 15px; text-align: left; transition: 0.2s;
+        }
+        .lvl-card:hover { border-color: var(--primary-color); background: #fffef0; transform: scale(1.02); }
+        .lvl-icon { font-size: 2.2rem; background: #fff9db; padding: 10px; border-radius: 15px; }
+
+        /* Game Area */
+        .hud { display: flex; justify-content: space-between; padding: 12px; font-weight: bold; background: rgba(255,255,255,0.8); border-radius: 15px; margin-bottom: 20px; border: 1px solid #eee; }
+        
+        .q-box {
+            background: white; padding: 20px; border-radius: 25px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04); margin-bottom: 25px; min-height: 220px;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer;
+            border: 2px solid #ffe082; position: relative;
+        }
+        .speaker-btn {
+            background: var(--primary-color); width: 60px; height: 60px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; color: white; margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(212, 181, 0, 0.4);
+        }
+        .q-text { font-size: 1.8rem; line-height: 1.5; color: #222; font-weight: bold; }
+        
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .opt-btn {
+            background: white; border: 2px solid #f0f0f0; padding: 20px 10px;
+            font-size: 1.7rem; border-radius: 20px; font-weight: bold; color: #333; cursor: pointer;
+            box-shadow: 0 4px 0 #eee;
+        }
+        .opt-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #eee; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="hero-left">
+            <div class="logo-circle"><img src="JESSIEMATH-Q.png" alt="J" onerror="this.src='https://via.placeholder.com/40'"></div>
+            <div class="brand-name">Jessie Math</div>
+        </div>
+        <div class="nav-right">
+            <a href="https://jessiemath0703-chu.github.io/website2/" class="nav-btn"><i class="fas fa-home"></i>首頁</a>
+            <a href="https://jessiemath0703-chu.github.io/Game-Lobby/" class="nav-btn"><i class="fas fa-gamepad"></i>大廳</a>
+
+            <!-- ✅ 只改這顆：改成明確打到 index.html + 錨點，直接進入你截圖那個「200以內的數」彈窗頁 -->
+            <a href="https://jessiemath0703-chu.github.io/Game-Lobby/index.html#g2-u1" class="nav-btn">
+                <i class="fas fa-undo"></i>二年級200以內的數
+            </a>
+        </div>
+    </header>
+
+    <div id="screen-login" class="screen active">
+        <div class="input-group">
+            <h2>輸入名字開始挑戰</h2>
+            <input type="text" id="player-name" placeholder="點這裡寫名字..." maxlength="8">
+            <button class="btn-main" onclick="toLevelSelect()">進入遊戲</button>
+        </div>
+    </div>
+
+    <div id="screen-levels" class="screen">
+        <h3>選擇挑戰關卡</h3>
+        <div class="grid">
+            <div class="lvl-card" onclick="startGame(1)" onmouseenter="speak('第一關，來練習數到兩百吧')">
+                <div class="lvl-icon">🔢</div>
+                <div><b>1-1 數到 200</b><br><small>數字接龍練習</small></div>
+            </div>
+            <div class="lvl-card" onclick="startGame(2)" onmouseenter="speak('第二關，認識百、十、一')">
+                <div class="lvl-icon">🧱</div>
+                <div><b>1-2 百、十、一</b><br><small>認識位值概念</small></div>
+            </div>
+            <div class="lvl-card" onclick="startGame(3)" onmouseenter="speak('第三關，你是付錢大師嗎？')">
+                <div class="lvl-icon">💰</div>
+                <div><b>1-3 付錢大師</b><br><small>錢幣點數與組合</small></div>
+            </div>
+            <div class="lvl-card" onclick="startGame(4)" onmouseenter="speak('第四關，比比看誰比較大')">
+                <div class="lvl-icon">⚖️</div>
+                <div><b>1-4 誰比較大</b><br><small>數字大小比較</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-game" class="screen">
+        <div class="hud">
+            <span>🏆 <span id="score">0</span></span>
+            <span id="combo-display" style="color: #ff922b;"></span>
+            <span style="color: var(--accent-color);">⏳ <span id="time">60</span></span>
+        </div>
+        
+        <div class="q-box" id="q-area" onclick="repeatQuestion()">
+            <div class="speaker-btn">
+                <i class="fas fa-volume-up"></i>
+            </div>
+            <div id="q-text" class="q-text">準備好了嗎？</div>
+            <div style="font-size: 0.85rem; color: #999; margin-top: 10px;">點一下小喇叭，我會唸題目喔！</div>
+        </div>
+
+        <div class="options" id="options-container"></div>
+
+        <div style="margin-top: 30px; display: flex; justify-content: center; gap: 15px;">
+            <button onclick="pauseGame()">暫停</button>
+            <button onclick="resetGame()">重新</button>
+            <button onclick="backToMenu()">選單</button>
+        </div>
+    </div>
+
+    <div id="pause-overlay" class="overlay">
+        <h2>暫停中</h2>
+        <button class="btn-main" onclick="resumeGame()">繼續遊戲</button>
+    </div>
+
+    <div id="screen-result" class="screen">
+        <h2 id="res-msg">挑戰完成！</h2>
+        <div style="font-size: 3rem; margin: 15px 0; color: #f08c00;" id="res-score">0</div>
+        <div id="stars" style="font-size: 3rem; color: #FFD700; margin-bottom: 20px;"></div>
+        <button class="btn-main" onclick="showScreen('screen-levels')">再玩一次</button>
+    </div>
+
+    <script>
+        let score = 0, timeLeft = 60, combo = 0, timer = null, isPaused = false;
+        let currentLevel = 1, currentAns = null, lastSpeech = "";
+
+        // 數字轉中文唸法
+        function numberToChinese(num) {
+            if (num === 0) return "零";
+            const units = ["", "十", "百"];
+            const chars = ["零", "一", "二", "三", "四", "五", "六", "七", "八", "九"];
+            let str = num.toString();
+            let result = "";
+            for (let i = 0; i < str.length; i++) {
+                let n = parseInt(str[i]);
+                let pos = str.length - i - 1;
+                if (n !== 0) {
+                    if (!(pos === 1 && n === 1 && str.length === 2)) result += chars[n];
+                    result += units[pos];
+                } else {
+                    if (result !== "" && result[result.length-1] !== "零" && pos !== 0) result += "零";
+                }
+            }
+            return result.replace(/零$/, "");
+        }
+
+        // 語音播放
+        function speak(text) {
+            if(!text) return;
+            window.speechSynthesis.cancel(); 
+            let processedText = text.toString().replace(/\d+/g, (m) => numberToChinese(parseInt(m)));
+            const msg = new SpeechSynthesisUtterance(processedText);
+            msg.lang = 'zh-TW';
+            msg.rate = 0.9;  
+            msg.pitch = 1.2; 
+            window.speechSynthesis.speak(msg);
+        }
+
+        // 重新唸題目 (喇叭按鈕觸發)
+        function repeatQuestion() { speak(lastSpeech); }
+
+        function toLevelSelect() {
+            if(!document.getElementById('player-name').value) {
+                alert("請先寫下你的名字喔！");
+                return;
+            }
+            showScreen('screen-levels');
+        }
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function startGame(lvl) {
+            currentLevel = lvl;
+            score = 0; timeLeft = 60; combo = 0; isPaused = false;
+            document.getElementById('score').innerText = "0";
+            showScreen('screen-game');
+            startTimer();
+            nextQuestion();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                if(!isPaused) {
+                    timeLeft--;
+                    document.getElementById('time').innerText = timeLeft;
+                    if(timeLeft <= 0) endGame();
+                }
+            }, 1000);
+        }
+
+        function nextQuestion() {
+            const container = document.getElementById('options-container');
+            container.innerHTML = "";
+            let data = generateQuestion(currentLevel);
+            currentAns = data.ans;
+            document.getElementById('q-text').innerText = data.display;
+            lastSpeech = data.speech;
+
+            data.opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'opt-btn';
+                b.innerText = o;
+                b.onclick = () => checkAns(o);
+                container.appendChild(b);
+            });
+        }
+
+        function generateQuestion(lvl) {
+            let display, speech, ans, opts = [];
+            const r = (m, x) => Math.floor(Math.random() * (x - m + 1)) + m;
+
+            if(lvl === 1) { // 數到 200
+                let start = r(100, 195);
+                display = `${start}, ${start+1}, ( ? )`;
+                speech = `數字接龍，${start}, ${start+1}, 下一個數字是多少？`;
+                ans = start + 2;
+            } else if(lvl === 2) { // 位值
+                let h = 1, t = r(0, 9), o = r(0, 9);
+                display = `${h}個百, ${t}個十, ${o}個一`;
+                speech = `${h}個百, ${t}個十, 和 ${o}個一, 合起來是多少？`;
+                ans = h*100 + t*10 + o;
+            } else if(lvl === 3) { // 付錢
+                let total = r(11, 19) * 10;
+                display = `付付看：${total} 元`;
+                let h = Math.floor(total/100), t = (total%100)/10;
+                speech = `這要${total}元, 請問要付幾張一百和幾個十元？`;
+                ans = `${h}張100, ${t}個10`;
+                opts = [ans, `${h}張100, ${r(1,9)}個10`].sort(() => Math.random()-0.5);
+            } else { // 比較
+                let n1 = r(100, 199), n2 = r(100, 199);
+                while(n1 === n2) n2 = r(100, 199);
+                display = `${n1} 和 ${n2}`;
+                speech = `${n1} 和 ${n2}, 哪一個比較大？`;
+                ans = Math.max(n1, n2);
+            }
+
+            if(opts.length === 0) {
+                opts = [ans];
+                while(opts.length < 4) {
+                    let w = ans + r(-10, 10);
+                    if(w > 0 && !opts.includes(w)) opts.push(w);
+                }
+            }
+            return { display, speech, ans, opts: opts.sort(() => Math.random() - 0.5) };
+        }
+
+        function checkAns(p) {
+            if(p == currentAns) {
+                score += (10 + combo);
+                combo++; timeLeft += 5;
+                document.getElementById('combo-display').innerText = `連擊 ${combo}`;
+                speak("答對了！");
+            } else {
+                combo = 0; timeLeft -= 5;
+                document.getElementById('combo-display').innerText = "";
+                speak("哎呀，答案是" + currentAns);
+            }
+            document.getElementById('score').innerText = score;
+            setTimeout(nextQuestion, 800);
+        }
+
+        function pauseGame() { isPaused = true; document.getElementById('pause-overlay').style.display = 'flex'; }
+        function resumeGame() { isPaused = false; document.getElementById('pause-overlay').style.display = 'none'; }
+        function resetGame() { startGame(currentLevel); }
+        function backToMenu() { clearInterval(timer); showScreen('screen-levels'); }
+
+        function endGame() {
+            clearInterval(timer);
+            showScreen('screen-result');
+            document.getElementById('res-score').innerText = score;
+            let s = score > 150 ? "★★★" : (score > 70 ? "★★" : "★");
+            document.getElementById('stars').innerText = s;
+            speak("挑戰結束囉！你得到了" + score + "分！");
+        }
+    </script>
+</body>
+</html>
